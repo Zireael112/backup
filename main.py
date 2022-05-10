@@ -27,7 +27,7 @@ def get_photo(offset=0, count=50):
     return res
 
 
-# Функция для создания словаря с ключом - количество лайков, значение - ссылка на картинку. В порядке возрастания
+# Функция для сохранения фото самого большого разрешения в папку images
 def get_largest_photo():
     data = get_photo()
     count_photo = data['response']['count']
