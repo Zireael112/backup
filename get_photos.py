@@ -86,7 +86,7 @@ if choice == 'new':
 elif choice == 'standart':
     VK_USER_ID = '245762060'
 
-token = 'AQAAAABfGD2GAAfkONDLMqFw1EXKq4hOt5OVxG8'
+token = ''
 link_load = yadisk.YaDisk(token=token)
 
 
