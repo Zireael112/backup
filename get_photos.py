@@ -15,19 +15,20 @@ def get_photo(offset=0, count=50):
         'v': '5.131',
         'count': count,
         'extended': 1,
-        'photo_sizes': 1,
     }
 
     res = requests.get(URL + 'photos.get', params=params).json()
     return res
 
 
-# Функция для сохранения фото самого большого разрешения в папку images
+# Функция для сохранения фото самого большого разрешения в папку images и отправка на яндекс диск
 def get_largest_photo_and_load_on_disk():
     data = get_photo()
     count_photo = data['response']['count']
     i = 0
     count = 50
+
+
 
     while i <= count_photo:
         if count_photo == 0:
@@ -38,6 +39,8 @@ def get_largest_photo_and_load_on_disk():
 
         # Вынимаем название(лайки) и фото наибольшего размера.
         for files in data['response']['items']:
+            dir_info = {}
+            file_size = files['sizes'][-1]['type']
             file_url = files['sizes'][-1]['url']
             filename = files['likes']['count']
             filename_wb = file_url.split('/')[-1].split('?')[0]
@@ -46,6 +49,10 @@ def get_largest_photo_and_load_on_disk():
 
             with open('images/' + filename_wb, 'wb') as file_wr:
                 file_wr.write(res.content)
+
+            dir_info['file_name'] = str(filename) + '.' + str(file_url.split('/')[-1].split('?')[0].split('.')[-1])
+            dir_info['size'] = str(file_size)
+            list_info.append(dir_info)
 
             # Создаем папку на яндекс диске
             try:
@@ -59,7 +66,7 @@ def get_largest_photo_and_load_on_disk():
                 link_load.upload('images/' + filename_wb, '/Photos/' + str(filename))
                 print('Фото загружено...\n')
             except yadisk.exceptions.PathExistsError:
-                print(f'Произошёл конфлик в связи с одинаковым названием файлов, файл {file_url} будет перезаписан')
+                print(f'Произошёл конфлик в связи с одинаковым названием файлов, файл {file_url} не будет записан')
                 continue
 
         i += count
@@ -67,16 +74,29 @@ def get_largest_photo_and_load_on_disk():
 
 # # Переменные
 
-# Данные для вк
+# Читаем токен из файла
 with open('token.txt', 'r') as file:
     VK_TOKEN = file.read().strip()
 
 URL = 'https://api.vk.com/method/'
+choice = input('Введите id профиля для загрузки фотографий, или используйте имеющийся в базе id(new/standart): ')
 
-# Универсальный id - 375505257
-VK_USER_ID = input('Введите id профиля с которого необходимо скачать фотографии: ')
+if choice == 'new':
+    VK_USER_ID = input('id профиля: ')
+elif choice == 'standart':
+    VK_USER_ID = '245762060'
+
 token = 'AQAAAABfGD2GAAfkONDLMqFw1EXKq4hOt5OVxG8'
 link_load = yadisk.YaDisk(token=token)
 
+
+list_info = []
+
 get_largest_photo_and_load_on_disk()
-print('Все файлы загружены!')
+print('Все файлы загружены!\n')
+
+with open('info.json', 'w') as fp:
+    json.dump(list_info, fp)
+
+with open('info.json', 'r') as reading:
+    pprint(reading.read())
