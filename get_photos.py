@@ -84,7 +84,7 @@ choice = input('Введите id профиля для загрузки фот�
 if choice == 'new':
     VK_USER_ID = input('id профиля: ')
 elif choice == 'standart':
-    VK_USER_ID = '245762060'
+    VK_USER_ID = '552934290'
 
 token = ''
 link_load = yadisk.YaDisk(token=token)
@@ -95,8 +95,8 @@ list_info = []
 get_largest_photo_and_load_on_disk()
 print('Все файлы загружены!\n')
 
-with open('info.json', 'w') as fp:
+with open('requiremеnts.txt', 'w') as fp:
     json.dump(list_info, fp)
 
-with open('info.json', 'r') as reading:
+with open('requiremеnts.txt', 'r') as reading:
     pprint(reading.read())
